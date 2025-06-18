@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../screens/faceverification.dart';
+import '../screens/leaveapplicationview.dart';
 import '../screens/puchedout.dart';
 
 class HomepageViewModel extends ChangeNotifier {
@@ -99,5 +100,12 @@ class HomepageViewModel extends ChangeNotifier {
       );
     }
   }
+  void navigateToLeaves(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LeaveFormView()),
+    );
+  }
 }
+
 

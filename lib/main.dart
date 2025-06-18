@@ -6,6 +6,7 @@ import 'package:miniproject/screens/signuppage.dart';
 import 'package:miniproject/viewmodel/ProfilepageModel.dart';
 import 'package:miniproject/viewmodel/forgetviewmodel.dart';
 import 'package:miniproject/viewmodel/homepageviewmodels.dart';
+import 'package:miniproject/viewmodel/leaveviewmodel.dart';
 import 'package:miniproject/viewmodel/loginviewmodels.dart';
 import 'package:miniproject/viewmodel/signupviewmodels.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ForgetPasswordViewModel()),
         ChangeNotifierProvider(create: (_) => HomepageViewModel()),
         ChangeNotifierProvider(create: (_) => ProfilepageViewModel()),
+        ChangeNotifierProvider(create: (_) => LeaveFormViewModel()),
       ],
       child: const MyApp(),
     ),

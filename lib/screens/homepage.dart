@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../viewmodel/homepageviewmodels.dart';
 import '../wigets/commonwidgets.dart';
 import 'faceverification.dart';
+import 'leaveapplicationview.dart';
 
 class HomepageView extends StatelessWidget {
   const HomepageView({super.key});
@@ -86,7 +87,7 @@ class _HomepageContentState extends State<HomepageContent> {
               const SizedBox(height: 16),
               _buildOverview(vm),
               const SizedBox(height: 16),
-              _buildDashboard(),
+              _buildDashboard(vm),
             ],
           ),
         ),
@@ -333,7 +334,7 @@ class _HomepageContentState extends State<HomepageContent> {
     );
   }
 
-  Widget _buildDashboard() {
+  Widget _buildDashboard(HomepageViewModel vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -346,23 +347,21 @@ class _HomepageContentState extends State<HomepageContent> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: [
-            _dashboardItem(Icons.calendar_today, "Attendance"),
-            _dashboardItem(Icons.logout, "Leaves"),
-            _dashboardItem(Icons.info, "Leave Status"),
-            _dashboardItem(Icons.event_note, "Holiday List"),
-            _dashboardItem(Icons.receipt_long, "Payslip"),
-            _dashboardItem(Icons.bar_chart, "Reports"),
+            _dashboardItem(Icons.calendar_today, "Attendance", () {}),
+            _dashboardItem(Icons.logout, "Leaves", () => vm.navigateToLeaves(context)),
+            _dashboardItem(Icons.info, "Leave Status", () {}),
+            _dashboardItem(Icons.event_note, "Holiday List", () {}),
+            _dashboardItem(Icons.receipt_long, "Payslip", () {}),
+            _dashboardItem(Icons.bar_chart, "Reports", () {}),
           ],
         ),
       ],
     );
   }
 
-  Widget _dashboardItem(IconData icon, String title) {
+  Widget _dashboardItem(IconData icon, String title, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () {
-        // Handle dashboard item tap
-      },
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
@@ -379,4 +378,5 @@ class _HomepageContentState extends State<HomepageContent> {
       ),
     );
   }
+
 }
