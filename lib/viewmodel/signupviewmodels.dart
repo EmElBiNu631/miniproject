@@ -3,6 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignupViewModel extends ChangeNotifier {
+  final formKey = GlobalKey<FormState>();
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final mobileController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -27,7 +34,7 @@ class SignupViewModel extends ChangeNotifier {
         'created_at': Timestamp.now(),
       });
 
-      return null; // success
+      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') return 'Email already in use';
       if (e.code == 'weak-password') return 'Password too weak';

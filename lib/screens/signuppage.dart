@@ -5,24 +5,36 @@ import '../viewmodel/signupviewmodels.dart';
 import 'loginpage.dart';
 
 class Signuppage extends StatefulWidget {
-   Signuppage({super.key});
+  const Signuppage({super.key});
 
   @override
   State<Signuppage> createState() => _SignuppageState();
 }
 
 class _SignuppageState extends State<Signuppage> {
-  final _formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-  final mobileController = TextEditingController();
+  late SignupViewModel viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    viewModel = SignupViewModel();
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers to prevent memory leaks
+    viewModel.nameController.dispose();
+    viewModel.emailController.dispose();
+    viewModel.mobileController.dispose();
+    viewModel.passwordController.dispose();
+    viewModel.confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SignupViewModel(),
+    return ChangeNotifierProvider.value(
+      value: viewModel,
       child: Scaffold(
         body: Stack(
           children: [
@@ -59,23 +71,28 @@ class _SignuppageState extends State<Signuppage> {
 
     return Center(
       child: SingleChildScrollView(
-        padding:  EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Form(
-          key: _formKey,
+          key: viewModel.formKey,
           child: Column(
             children: [
-               Text('ZiyaAttend', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-               SizedBox(height: 8),
-               Text('Create An Account', style: TextStyle(fontSize: 18, color: Colors.greenAccent)),
-               SizedBox(height: 32),
-              _buildTextField(nameController, 'Name', Validators.validateName),
-              _buildTextField(emailController, 'Email', Validators.validateEmail, inputType: TextInputType.emailAddress),
-              _buildTextField(mobileController, 'Mobile Number', Validators.validateMobile, inputType: TextInputType.phone),
-              _buildTextField(passwordController, 'Password', Validators.validatePassword, obscure: true),
-              _buildTextField(confirmPasswordController, 'Confirm Password', (value) => Validators.validateConfirmPassword(value, passwordController.text), obscure: true),
-               SizedBox(height: 24),
+              const Text('ZiyaAttend', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text('Create An Account', style: TextStyle(fontSize: 18, color: Colors.greenAccent)),
+              const SizedBox(height: 32),
+              _buildTextField(viewModel.nameController, 'Name', Validators.validateName),
+              _buildTextField(viewModel.emailController, 'Email', Validators.validateEmail, inputType: TextInputType.emailAddress),
+              _buildTextField(viewModel.mobileController, 'Mobile Number', Validators.validateMobile, inputType: TextInputType.phone),
+              _buildTextField(viewModel.passwordController, 'Password', Validators.validatePassword, obscure: true),
+              _buildTextField(
+                viewModel.confirmPasswordController,
+                'Confirm Password',
+                    (value) => Validators.validateConfirmPassword(value, viewModel.passwordController.text),
+                obscure: true,
+              ),
+              const SizedBox(height: 24),
               _buildSignupButton(context, viewModel),
-               SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildLoginRedirect(context),
             ],
           ),
@@ -92,7 +109,7 @@ class _SignuppageState extends State<Signuppage> {
         TextInputType inputType = TextInputType.text,
       }) {
     return Padding(
-      padding:  EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
         validator: validator,
@@ -112,17 +129,17 @@ class _SignuppageState extends State<Signuppage> {
       height: 50,
       child: ElevatedButton(
         onPressed: () async {
-          if (_formKey.currentState!.validate()) {
+          if (viewModel.formKey.currentState!.validate()) {
             String? error = await viewModel.signUp(
-              name: nameController.text.trim(),
-              email: emailController.text.trim(),
-              mobile: mobileController.text.trim(),
-              password: passwordController.text.trim(),
-              confirmPassword: confirmPasswordController.text.trim(),
+              name: viewModel.nameController.text.trim(),
+              email: viewModel.emailController.text.trim(),
+              mobile: viewModel.mobileController.text.trim(),
+              password: viewModel.passwordController.text.trim(),
+              confirmPassword: viewModel.confirmPasswordController.text.trim(),
             );
             if (error == null) {
-              ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text('Signup successful')));
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  LoginPage()));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup successful')));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginPage()));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
             }
@@ -132,7 +149,7 @@ class _SignuppageState extends State<Signuppage> {
           backgroundColor: Colors.blue,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        child:  Text('Signup', style: TextStyle(color: Colors.white, fontSize: 16)),
+        child: const Text('Signup', style: TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }
@@ -141,10 +158,10 @@ class _SignuppageState extends State<Signuppage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-         Text("Already have an account? "),
+        const Text("Already have an account? "),
         GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) =>  LoginPage())),
-          child:  Text("Login", style: TextStyle(fontWeight: FontWeight.bold)),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LoginPage())),
+          child: const Text("Login", style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ],
     );

@@ -3,22 +3,24 @@ import 'package:flutter/material.dart';
 class DashboardItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final VoidCallback? onTap;
 
   const DashboardItem({
     super.key,
     required this.icon,
     required this.title,
+    this.onTap, required MaterialColor iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        // Add navigation or action here
-      },
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.blueAccent.withOpacity(0.1),
+
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(12),

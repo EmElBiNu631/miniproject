@@ -1,18 +1,15 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import '../services/leaveformfirebase.dart';
+import 'package:file_picker/file_picker.dart';
 
 class LeaveFormViewModel extends ChangeNotifier {
-  final nameController = TextEditingController();
-  final idController = TextEditingController();
+  final nameController = TextEditingController(text: "Emel Binu"); // Autofill example
+  final idController = TextEditingController(text: "EMP12345"); // Autofill example
   final reasonController = TextEditingController();
 
   DateTime? fromDate;
   DateTime? toDate;
   String leaveType = '';
   String? attachmentPath;
-
-  final _firestoreService = FirestoreService();
 
   void setFromDate(DateTime date) {
     fromDate = date;
@@ -29,43 +26,37 @@ class LeaveFormViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setAttachmentPath(String? path) {
-    attachmentPath = path;
-    notifyListeners();
-  }
-
   Future<void> pickAttachment() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      setAttachmentPath(result.files.single.name); // This updates the view
+
+    if (result != null && result.files.single.path != null) {
+      attachmentPath = result.files.single.path;
+      notifyListeners();
     }
   }
-  Future<void> submitForm() async {
-    if (fromDate == null || toDate == null || leaveType.isEmpty || reasonController.text.isEmpty) {
-      debugPrint('All fields must be filled');
+
+  void submitForm() {
+    if (fromDate == null || toDate == null || leaveType.isEmpty || reasonController.text.trim().isEmpty) {
+      debugPrint("Form not valid");
       return;
     }
 
-    await _firestoreService.submitLeaveApplication(
-      employeeName: nameController.text,
-      employeeId: idController.text,
-      fromDate: fromDate!,
-      toDate: toDate!,
-      leaveType: leaveType,
-      reason: reasonController.text,
-      attachment: attachmentPath,
-    );
-
-    debugPrint("Leave Submitted Successfully");
-    clearForm();
+    // Here you can push to Firebase or show a dialog
+    debugPrint("Leave Submitted:\n"
+        "Name: ${nameController.text}\n"
+        "ID: ${idController.text}\n"
+        "From: $fromDate\n"
+        "To: $toDate\n"
+        "Type: $leaveType\n"
+        "Reason: ${reasonController.text}\n"
+        "Attachment: $attachmentPath");
   }
 
-  void clearForm() {
-    fromDate = null;
-    toDate = null;
-    leaveType = '';
-    reasonController.clear();
-    attachmentPath = null;
-    notifyListeners();
+  @override
+  void dispose() {
+    nameController.dispose();
+    idController.dispose();
+    reasonController.dispose();
+    super.dispose();
   }
 }

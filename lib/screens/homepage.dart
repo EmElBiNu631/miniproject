@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:miniproject/screens/puchedout.dart';
 import 'package:provider/provider.dart';
 import '../viewmodel/homepageviewmodels.dart';
 import '../wigets/commonwidgets.dart';
@@ -41,10 +39,7 @@ class _HomepageContentState extends State<HomepageContent> {
         unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          // Handle navigation
+          setState(() => _currentIndex = index);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -59,35 +54,23 @@ class _HomepageContentState extends State<HomepageContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(vm),
+              _buildTopHeader(),
               const SizedBox(height: 20),
-              Text("Good Morning,\n${vm.userName}",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 10),
-              if (vm.isCheckedIn && vm.checkInTime != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.access_time, color: Colors.blueAccent),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Punched in at ${DateFormat('hh:mm a').format(vm.checkInTime!)}',
-                        style: const TextStyle(color: Colors.blueAccent, fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
+              const Text(
+                "Good Morning,\nEmel Binu",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                vm.isCheckedIn ? "" : "You haven't Punch-in yet",
+                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+              ),
               const SizedBox(height: 16),
-              _buildCheckInCard(context, vm),
-              const SizedBox(height: 16),
-              _buildOverview(vm),
-              const SizedBox(height: 16),
-              _buildDashboard(vm),
+              _buildPunchButtons(vm),
+              const SizedBox(height: 24),
+              _buildOverviewCards(),
+              const SizedBox(height: 12),
+              _buildDashboardGrid(context, vm),
             ],
           ),
         ),
@@ -95,209 +78,87 @@ class _HomepageContentState extends State<HomepageContent> {
     );
   }
 
-  void showPunchInDialog(BuildContext context, HomepageViewModel vm) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 20),
-              Text("Select Punch-In Type", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              Text("Are you working from home or on site today?", style: GoogleFonts.poppins(fontSize: 14)),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop(); // Close dialog
-                        vm.punchInWithLocation("On Site");
-                        Navigator.push(context, MaterialPageRoute(builder: (_) =>  FaceVerificationView(isPunchingIn: true,)));
-                      },
-                      child: Text("On Site", style: GoogleFonts.poppins()),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop(); // Close dialog
-                        vm.punchInWithLocation("Work From Home");
-                        Navigator.push(context, MaterialPageRoute(builder: (_) =>  FaceVerificationView(isPunchingIn: true,)));
-                      },
-                      child: Text("Work From Home", style: GoogleFonts.poppins(color: Colors.white)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildHeader(HomepageViewModel vm) {
+  Widget _buildTopHeader() {
     return Row(
       children: [
-        const CircleAvatar(
-          radius: 24,
-          backgroundImage: AssetImage("assets/images/profile.jpg"),
-        ),
-        const SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(vm.userName, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(vm.role, style: const TextStyle(color: Colors.grey)),
-          ],
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.green.shade200,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 24,
+                backgroundImage: AssetImage("assets/images/profile.jpg"),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text("Emel Binu", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("Full-stack Developer", style: TextStyle(fontSize: 12, color: Colors.white)),
+                ],
+              ),
+            ],
+          ),
         ),
         const Spacer(),
-        const Icon(Icons.notifications_none, color: Colors.blueAccent),
+        Image.asset("assets/images/companylogo.png", height: 40),
+        const SizedBox(width: 10),
+        const Icon(Icons.notifications_none, color: Colors.blueAccent, size: 30),
       ],
     );
   }
 
-  Widget _buildCheckInCard(BuildContext context, HomepageViewModel vm) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (vm.checkInTime != null || vm.hasPunchedOut)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: vm.hasPunchedOut ? Colors.red.shade50 : Colors.green.shade50,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.access_time,
-                    color: vm.hasPunchedOut ? Colors.redAccent : Colors.green,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    vm.hasPunchedOut
-                        ? 'Punched out successfully'
-                        : 'Checked-in at ${DateFormat('hh:mm a').format(vm.checkInTime!)}',
-                    style: TextStyle(
-                      color: vm.hasPunchedOut ? Colors.redAccent : Colors.green,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          if (vm.checkInTime == null && !vm.hasPunchedOut)
-            const Text(
-              "You haven't Checked-in yet",
-              style: TextStyle(color: Colors.redAccent),
-            ),
-
-          const SizedBox(height: 10),
-
-          Row(
-            children: [
-              Icon(
-                Icons.access_time,
-                color: vm.hasPunchedOut ? Colors.redAccent : Colors.green,
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: !vm.isCheckedIn
-                      ? () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => PunchInDialog(
-                        onSelect: (location) {
-                          Navigator.pop(context); // Close dialog
-                          vm.punchInWithLocation(location); // Update state
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) =>  FaceVerificationView(isPunchingIn: true,)),
-                          );
-                        },
+  Widget _buildPunchButtons(HomepageViewModel vm) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: !vm.isCheckedIn
+                ? () {
+              showDialog(
+                context: context,
+                builder: (_) => PunchInDialog(
+                  onSelect: (location) {
+                    Navigator.pop(context);
+                    vm.punchInWithLocation(location);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FaceVerificationView(isPunchingIn: true),
                       ),
                     );
-                  }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: !vm.isCheckedIn ? Colors.green : Colors.grey[300],
-                    foregroundColor: !vm.isCheckedIn ? Colors.white : Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  child: const Text("Punch In"),
+                  },
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: vm.isCheckedIn
-                      ? () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text("Confirm Punch Out"),
-                        content: const Text("Are you sure you want to punch out?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context), // Dismiss dialog
-                            child: const Text("Cancel"),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context); // Close dialog first
-                              vm.punchOut(); // Update ViewModel state
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => PunchedOutSuccessView(
-                                    time: DateFormat('hh:mm a').format(DateTime.now()),
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text("Punch Out"),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: vm.isCheckedIn ? Colors.redAccent : Colors.grey[300],
-                    foregroundColor: vm.isCheckedIn ? Colors.white : Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  child: const Text("Punch Out"),
-                ),
-              ),
-            ],
+              );
+            }
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: const Text("Punch In", style: TextStyle(color: Colors.white)),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey.shade300,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: const Text("Punch Out", style: TextStyle(color: Colors.black54)),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildOverview(HomepageViewModel vm) {
+  Widget _buildOverviewCards() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -305,61 +166,62 @@ class _HomepageContentState extends State<HomepageContent> {
         const SizedBox(height: 10),
         Row(
           children: [
-            _overviewBox("Presence", vm.presence.toString(), Colors.green),
-            _overviewBox("Absence", vm.absence.toString(), Colors.red),
-            _overviewBox("Leaves", vm.leaves.toString(), Colors.orange),
+            _overviewBox("Presence", "20", Colors.green),
+            _overviewBox("Absence", "03", Colors.red),
+            _overviewBox("Leaves", "02", Colors.orange),
           ],
         ),
       ],
     );
   }
 
-  Widget _overviewBox(String title, String count, Color color) {
+  Widget _overviewBox(String title, String value, Color color) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade300),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           children: [
-            Text(count, style: TextStyle(fontSize: 20, color: color, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(title, style: TextStyle(color: color)),
+            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+            const SizedBox(height: 6),
+            Text(title, style: TextStyle(color: color, fontSize: 14)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDashboard(HomepageViewModel vm) {
+  Widget _buildDashboardGrid(BuildContext context, HomepageViewModel vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Dashboard", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         GridView.count(
+          crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: [
-            _dashboardItem(Icons.calendar_today, "Attendance", () {}),
-            _dashboardItem(Icons.logout, "Leaves", () => vm.navigateToLeaves(context)),
-            _dashboardItem(Icons.info, "Leave Status", () {}),
-            _dashboardItem(Icons.event_note, "Holiday List", () {}),
-            _dashboardItem(Icons.receipt_long, "Payslip", () {}),
-            _dashboardItem(Icons.bar_chart, "Reports", () {}),
+            _dashboardItem(Icons.calendar_month, "Attendance", Colors.green, () {}),
+            _dashboardItem(Icons.logout, "Leaves", Colors.orange, () => vm.navigateToLeaves(context)),
+            _dashboardItem(Icons.info_outline, "Leave Status", Colors.purple, () {}),
+            _dashboardItem(Icons.event_note, "Holiday List", Colors.indigo, () {}),
+            _dashboardItem(Icons.receipt_long, "Payslip", Colors.teal, () {}),
+            _dashboardItem(Icons.bar_chart, "Reports", Colors.redAccent, () {}),
           ],
         ),
       ],
     );
   }
 
-  Widget _dashboardItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _dashboardItem(IconData icon, String title, Color iconColor, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -370,13 +232,12 @@ class _HomepageContentState extends State<HomepageContent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 30, color: Colors.blueAccent),
-            const SizedBox(height: 8),
-            Text(title, textAlign: TextAlign.center),
+            Icon(icon, size: 28, color: iconColor),
+            const SizedBox(height: 6),
+            Text(title, style: const TextStyle(fontSize: 13), textAlign: TextAlign.center),
           ],
         ),
       ),
     );
   }
-
 }

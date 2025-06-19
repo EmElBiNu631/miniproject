@@ -1,9 +1,7 @@
-// Flutter & third-party imports
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-// Internal imports
 import '../viewmodel/leaveviewmodel.dart';
 
 class LeaveFormView extends StatelessWidget {
@@ -33,52 +31,12 @@ class LeaveFormContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Row: Search, Notification, Profile
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 220,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        hintStyle: GoogleFonts.poppins(fontSize: 14),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.notifications_none, size: 28),
-                      const SizedBox(width: 12),
-                      const CircleAvatar(
-                        radius: 16,
-                        backgroundImage: AssetImage('assets/images/profile.jpg'),
-                      ),
-                    ],
-                  )
-                ],
               ),
               const SizedBox(height: 24),
 
-              // Back Button
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Row(
-                  children: [
-                    const Icon(Icons.arrow_back_ios, size: 16),
-                    const SizedBox(width: 4),
-                    Text("Back", style: GoogleFonts.poppins(fontSize: 14)),
-                  ],
-                ),
-              ),
               const SizedBox(height: 20),
-
-              // Page Title
               Text(
                 "Apply for Leave",
                 style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
@@ -104,8 +62,6 @@ class LeaveFormContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Date Fields Row
               Row(
                 children: [
                   Expanded(
@@ -134,8 +90,6 @@ class LeaveFormContent extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Leave Type Dropdown
               buildFieldCard(
                 icon: Icons.airplane_ticket_outlined,
                 child: DropdownButtonFormField<String>(
@@ -152,8 +106,6 @@ class LeaveFormContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Reason TextArea
               buildFieldCard(
                 icon: Icons.edit_note_outlined,
                 child: TextField(
@@ -167,8 +119,6 @@ class LeaveFormContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Attachment Field
               buildFieldCard(
                 icon: Icons.attach_file_outlined,
                 child: ListTile(
@@ -187,8 +137,6 @@ class LeaveFormContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-
-              // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -216,8 +164,6 @@ class LeaveFormContent extends StatelessWidget {
       ),
     );
   }
-
-  // Helper Widgets
   Widget buildFieldCard({required IconData icon, required Widget child}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

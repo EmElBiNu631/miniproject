@@ -22,7 +22,7 @@ class ProfilepageViewModel extends ChangeNotifier {
   int _selectedTabIndex = 0;
 
   int get selectedTabIndex => _selectedTabIndex;
-  bool get isCheckedIn => _isCheckedIn; // ✅ Add this line
+  bool get isCheckedIn => _isCheckedIn;
   bool get isUserCheckedIn => _isCheckedIn;
   bool get isPunchedIn => _isPunchedIn;
 

@@ -1,36 +1,38 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:miniproject/screens/homepage.dart';
-import 'package:miniproject/viewmodel/loginviewmodels.dart';
+import 'package:miniproject/screens/signuppage.dart';
 import 'package:provider/provider.dart';
-import '../../utils/validator.dart';
-import '../../screens/forgetpassword.dart';
-import '../../screens/signuppage.dart';
+
+import '../utils/validator.dart';
+import '../viewmodel/loginviewmodels.dart';
+import 'forgetpassword.dart';
+import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
-   LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final emailcontroller = TextEditingController();
-  final passwordcontroller = TextEditingController();
+
+  @override
+  void dispose() {
+    Provider.of<LoginViewModel>(context, listen: false).disposeControllers();
+    super.dispose();
+  }
 
   void _login(LoginViewModel loginVM) async {
-    if (_formKey.currentState!.validate()) {
-      final result = await loginVM.login(
-        email: emailcontroller.text.trim(),
-        password: passwordcontroller.text.trim(),
-      );
+    if (loginVM.formKey.currentState!.validate()) {
+      final result = await loginVM.login();
 
       if (result['success']) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => HomepageView(),
-          ),
+          MaterialPageRoute(builder: (_) => HomepageView()),
         );
       } else {
         _showErrorDialog(result['error'] ?? 'Login failed');
@@ -38,15 +40,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title:  Text("Login Failed"),
+        title: const Text("Login Failed"),
         content: Text(message),
         actions: [
           TextButton(
-            child:  Text("OK"),
+            child: const Text("OK"),
             onPressed: () => Navigator.pop(context),
           )
         ],
@@ -91,31 +94,31 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildForm(LoginViewModel loginVM) {
     return Center(
       child: SingleChildScrollView(
-        padding:  EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Form(
-          key: _formKey,
+          key: loginVM.formKey,
           child: Column(
             children: [
-               Text('ZiyaAttend', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-               SizedBox(height: 8),
-               Text("Login", style: TextStyle(fontSize: 18, color: Colors.greenAccent)),
-               SizedBox(height: 16),
+              const Text('ZiyaAttend', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text("Login", style: TextStyle(fontSize: 18, color: Colors.greenAccent)),
+              const SizedBox(height: 16),
               TextFormField(
-                controller: emailcontroller,
+                controller: loginVM.emailController,
                 decoration: _inputDecoration("Email"),
                 keyboardType: TextInputType.emailAddress,
                 validator: Validators.validateEmail,
               ),
-               SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
-                controller: passwordcontroller,
+                controller: loginVM.passwordController,
                 obscureText: true,
                 decoration: _inputDecoration("Enter a Password"),
                 validator: Validators.validatePassword,
               ),
-               SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildLoginButton(loginVM),
-               SizedBox(height: 8),
+              const SizedBox(height: 8),
               _buildBottomRow(),
             ],
           ),
@@ -142,8 +145,8 @@ class _LoginPageState extends State<LoginPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: loginVM.isLoading
-            ?  CircularProgressIndicator(color: Colors.white)
-            :  Text("Login", style: TextStyle(color: Colors.white, fontSize: 16)),
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }
@@ -153,12 +156,12 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         TextButton(
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) =>  Forgetpassword())),
-          child:  Text("Forgot Password?", style: TextStyle(color: Colors.black87)),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Forgetpassword())),
+          child: const Text("Forgot Password?", style: TextStyle(color: Colors.black87)),
         ),
         GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) =>  Signuppage())),
-          child:  Text(
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Signuppage())),
+          child: const Text(
             "Signup",
             style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
           ),
