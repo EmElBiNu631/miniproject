@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:miniproject/screens/profile.dart';
 import 'package:miniproject/screens/puchedout.dart';
 import 'package:miniproject/screens/punchedin%20sucess.dart';
@@ -16,6 +17,8 @@ class FaceConfirmationView extends StatefulWidget {
 }
 
 class _FaceConfirmationViewState extends State<FaceConfirmationView> {
+  final String checkinMessage = "Checked in at ${DateFormat('hh:mm a').format(DateTime.now())}";
+  final String checkoutMessage = "Checked out at ${DateFormat('hh:mm a').format(DateTime.now())}";
   bool isProcessing = false;
 
   @override
@@ -86,7 +89,7 @@ class _FaceConfirmationViewState extends State<FaceConfirmationView> {
                               ).then((_) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const Profilepage()),
+                                  MaterialPageRoute(builder: (_) =>  ProfilePageContent(checkinMessage: checkinMessage, checkoutMessage: checkoutMessage)),
                                 );
                               });
                             } else {
@@ -99,7 +102,7 @@ class _FaceConfirmationViewState extends State<FaceConfirmationView> {
                               ).then((_) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const Profilepage()),
+                                  MaterialPageRoute(builder: (_) =>  ProfilePageContent(checkinMessage: checkinMessage, checkoutMessage: checkoutMessage)),
                                 );
                               });
                             }

@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../screens/puchedout.dart';
 
 class ProfilepageViewModel extends ChangeNotifier {
-  bool hasPunchedOut = false;
-  bool isPunchingIn = true;
-  DateTime? punchOutTime;
-
   String userName = "Emel Binu";
   String role = "Employee";
   String worklocation = "Location";
-
   int presence = 18;
   int absence = 2;
   int leaves = 1;
 
-  DateTime? checkInTime;
-
+  bool hasPunchedOut = false;
   bool _isCheckedIn = false;
   bool _isPunchedIn = false;
+  String checkinMessage = "Checked in at ${DateFormat('hh:mm a').format(DateTime.now())}";
+  String checkoutMessage = "Checked out at ${DateFormat('hh:mm a').format(DateTime.now())}";
+
+
+  DateTime? checkInTime;
+  DateTime? punchOutTime;
+
+  // UI state
   int _selectedTabIndex = 0;
 
-  int get selectedTabIndex => _selectedTabIndex;
+  // Getters
   bool get isCheckedIn => _isCheckedIn;
-  bool get isUserCheckedIn => _isCheckedIn;
   bool get isPunchedIn => _isPunchedIn;
+  int get selectedTabIndex => _selectedTabIndex;
 
+  // Setters
   set isPunchedIn(bool value) {
     _isPunchedIn = value;
     notifyListeners();
@@ -41,12 +44,13 @@ class ProfilepageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Punch actions
   void punchIn() {
     _isCheckedIn = true;
     _isPunchedIn = true;
+    hasPunchedOut = false;
     checkInTime = DateTime.now();
     presence += 1;
-    hasPunchedOut = false;
     notifyListeners();
   }
 
@@ -66,40 +70,14 @@ class ProfilepageViewModel extends ChangeNotifier {
     worklocation = location;
     notifyListeners();
   }
+  List<Map<String, String>> getMetrics() {
+    return [
+      {"title": "Tasks Completed", "value": "8"},
+      {"title": "Pending Tasks", "value": "3"},
+      {"title": "Overdue Tasks", "value": "1"},
+      {"title": "Working Days", "value": "$presence"},
+      {"title": "Leaves Taken", "value": "$leaves"},
+    ];
+  }
 
-  // Future<void> handlePunchOut(BuildContext context) async {
-  //   final shouldPunchOut = await showDialog<bool>(
-  //     context: context,
-  //     builder: (dialogContext) {
-  //       return AlertDialog(
-  //         title: const Text("Confirm Punch Out"),
-  //         content: const Text("Are you sure you want to punch out?"),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(dialogContext, false),
-  //             child: const Text("Cancel"),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: () => Navigator.pop(dialogContext, true),
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: Colors.redAccent,
-  //               foregroundColor: Colors.white,
-  //             ),
-  //             child: const Text("Punch Out"),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  //
-  //   if (shouldPunchOut == true) {
-  //     punchOut();
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (_) => const PunchedOutSuccessView(time: '05:20 PM'),
-  //       ),
-  //     );
-  //   }
-  // }
 }

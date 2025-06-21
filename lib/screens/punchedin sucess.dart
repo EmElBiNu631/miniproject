@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:miniproject/screens/profile.dart';
 import 'package:provider/provider.dart';
 
@@ -7,18 +8,25 @@ import '../viewmodel/ProfilepageModel.dart';
 class PunchInSuccessView extends StatefulWidget {
   final String time;
 
-   PunchInSuccessView({super.key, required this.time});
+  const PunchInSuccessView({super.key, required this.time});
 
   @override
   State<PunchInSuccessView> createState() => _PunchInSuccessViewState();
 }
 
 class _PunchInSuccessViewState extends State<PunchInSuccessView> {
+  late String checkinMessage;
+  late String checkoutMessage;
+
   @override
   void initState() {
     super.initState();
 
-    // Wait 2 seconds, then navigate to Profilepage using existing ViewModel
+    final currentFormattedTime = DateFormat('hh:mm a').format(DateTime.now());
+    checkinMessage = "Checked in at $currentFormattedTime";
+    checkoutMessage = "Checked out at $currentFormattedTime";
+
+    // Wait 2 seconds, then navigate to ProfilePageContent
     Future.delayed(const Duration(seconds: 2), () {
       final existingVm = Provider.of<ProfilepageViewModel>(context, listen: false);
 
@@ -27,17 +35,21 @@ class _PunchInSuccessViewState extends State<PunchInSuccessView> {
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             value: existingVm,
-            child: const Profilepage(),
+            child: ProfilePageContent(
+              checkinMessage: checkinMessage,
+              checkoutMessage: checkoutMessage,
+            ),
           ),
         ),
       );
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration:  BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.white, Color(0xFF98E66D)],
             begin: Alignment.topCenter,
@@ -48,16 +60,16 @@ class _PunchInSuccessViewState extends State<PunchInSuccessView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-               CircleAvatar(
+              const CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.green,
                 child: Icon(Icons.check, size: 40, color: Colors.white),
               ),
-               SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
                 'Punched In Successfully at\n${widget.time}',
                 textAlign: TextAlign.center,
-                style:  TextStyle(fontSize: 16, color: Colors.black87),
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
               ),
             ],
           ),

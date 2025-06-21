@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:miniproject/screens/profile.dart';
 import 'package:provider/provider.dart';
 import '../viewmodel/LeaveDashboardViewModel.dart';
@@ -11,15 +12,23 @@ class LeaveDashboardView extends StatefulWidget {
   State<LeaveDashboardView> createState() => _LeaveDashboardViewState();
 }
 
+
 class _LeaveDashboardViewState extends State<LeaveDashboardView> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late LeaveDashboardViewModel vm;
+
+  late String checkinMessage;
+  late String checkoutMessage;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     vm = LeaveDashboardViewModel()..fetchLeaveData();
+
+    String formattedTime = DateFormat('hh:mm a').format(DateTime.now());
+    checkinMessage = "Checked in at $formattedTime";
+    checkoutMessage = "Checked out at $formattedTime";
   }
 
   @override
@@ -35,15 +44,22 @@ class _LeaveDashboardViewState extends State<LeaveDashboardView> with SingleTick
           titleSpacing: 0,
           leading: InkWell(
             onTap: () {
-         Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-           return Profilepage();
-         }));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProfilePageView(
+                    checkinMessage: checkinMessage,
+                    checkoutMessage: checkoutMessage,
+                  ),
+                ),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Image.asset("assets/images/companylogo.png"),
             ),
           ),
+
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: TextField(
